@@ -1,9 +1,15 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const fs = require('fs');
 const path = require('path');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+const envPath = path.resolve(__dirname, '../.env');
+if (fs.existsSync(envPath)) {
+  require('dotenv').config({ path: envPath });
+} else {
+  console.warn('⚠️  No .env file found at', envPath, '- using environment variables only.');
+}
 
 const app = express();
 
@@ -18,7 +24,7 @@ app.get('/', (req, res) => res.json({ message: 'ShopMERN API running' }));
 
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {
-  throw new Error('MONGO_URI is not defined. Make sure .env is loaded from the project root and contains MONGO_URI.');
+  throw new Error('MONGO_URI is not defined. Set MONGO_URI as an environment variable in production, or add it to the root .env file for local development.');
 }
 
 mongoose.connect(mongoUri)
